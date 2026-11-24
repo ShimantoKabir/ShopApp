@@ -22,6 +22,25 @@ abstract class ContactLauncher {
   Future<bool> share(String message);
 }
 
+/// A person chosen from the phone's contacts.
+class PickedContact {
+  final String name;
+
+  /// The number as saved in the phone (any format).
+  final String number;
+  const PickedContact({required this.name, required this.number});
+}
+
+/// Lets staff pick a customer from the phone's contacts, so the name and number
+/// need not be typed. It uses the phone's own contact chooser, which hands over
+/// only the one contact picked, so the app needs no permission to read contacts
+/// and never sees the rest of them.
+abstract class ContactPicker {
+  /// Opens the phone's contact chooser. Null if nothing was picked, the chosen
+  /// contact has no number, or the chooser could not be opened.
+  Future<PickedContact?> pick();
+}
+
 /// Gets a receipt to the customer. Behind an interface so screens don't depend
 /// on any particular app or plugin, and so tests can record what was sent.
 abstract class ReceiptSender {

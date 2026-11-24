@@ -1,15 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hardware_shop/domain/customers.dart';
 import 'package:hardware_shop/domain/entities.dart';
+import 'package:hardware_shop/domain/payments.dart';
 import 'package:hardware_shop/domain/users.dart';
 import 'package:hardware_shop/domain/sales.dart';
 import 'package:hardware_shop/domain/stock.dart';
 import 'package:hardware_shop/presentation/components/components.dart';
-import 'package:hardware_shop/presentation/daily_sales_page.dart';
-import 'package:hardware_shop/presentation/home_shell.dart';
-import 'package:hardware_shop/presentation/product_list_page.dart';
+import 'package:hardware_shop/presentation/daily_sales/daily_sales_page.dart';
+import 'package:hardware_shop/presentation/home_shell/home_shell.dart';
+import 'package:hardware_shop/presentation/product_list/product_list_page.dart';
+import 'package:hardware_shop/presentation/receipt/payment_receipt_page.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
-import 'package:hardware_shop/presentation/sell_page.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/sell/sell_page.dart';
+import 'package:hardware_shop/presentation/product_list/product_list_viewmodel.dart';
+import 'package:hardware_shop/presentation/sell/sell_viewmodel.dart';
+import 'package:hardware_shop/presentation/daily_sales/daily_sales_viewmodel.dart';
 import 'package:hardware_shop/presentation/widgets/restock_dialog.dart';
 import 'package:hardware_shop/presentation/widgets/sale_widgets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -462,6 +467,160 @@ void main() {
       expect(find.text('রহিম'), findsOneWidget);
       expect(find.text('বাকি: ৳১৫০'), findsOneWidget, reason: 'on the bill');
       expect(find.text('মোট বাকি: ৳১৫০'), findsOneWidget, reason: 'in the summary');
+    });
+
+    group('collecting a due from the account', () {
+      late FakeCustomerRepository customers;
+      late FakeReceiptSender sender;
+
+      setUp(() {
+        customers = FakeCustomerRepository()
+          ..summaries.add(const CustomerSummary(
+            id: 1,
+            name: 'রহিম',
+            mobile: '01712345678',
+            whatsapp: '01712345678',
+            billCount: 1,
+            totalSpent: 400,
+            totalPaid: 100,
+            due: 300,
+          ));
+        sender = FakeReceiptSender();
+        final at = clock.now();
+        sales.bills.add(Bill(
+          id: 1,
+          customerId: 1,
+          customerName: 'রহিম',
+          customerMobile: '01712345678',
+          customerWhatsApp: '01712345678',
+          paid: 100,
+          at: at,
+          lines: [Sale(productName: 'পেরেক', unit: 'কেজি', quantity: 4, unitPrice: 100, unitCost: 80, at: at)],
+        ));
+      });
+
+      Future<void> openCollect(WidgetTester tester, {bool canCollect = true}) async {
+        tester.view.physicalSize = const Size(900, 2800);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        await tester.pumpWidget(MaterialApp(
+          home: DailySalesPage(
+            viewModel: SalesSummaryViewModel(sales, clock, customers: canCollect ? customers : null),
+            screens: _Screens(),
+            shopName: 'হাসান স্টোর',
+            sender: sender,
+          ),
+        ));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('a sale with a due has "Take money"; the whole due is offered; the new receipt opens', (tester) async {
+        await openCollect(tester);
+        await tester.tap(find.text('টাকা নিন'));
+        await tester.pumpAndSettle();
+        expect(find.text('বাকির টাকা নিন'), findsOneWidget);
+        expect(find.widgetWithText(TextField, '৩০০'), findsOneWidget, reason: 'the whole due is filled in');
+
+        await tester.enterText(find.byType(TextField), '200');
+        await tester.tap(find.text('টাকা নিলাম'));
+        await tester.pumpAndSettle();
+
+        expect(customers.paymentCalls, ['collect 1 200.0']);
+        expect(find.byType(PaymentReceiptPage), findsOneWidget);
+        expect(find.text('৳২০০'), findsOneWidget, reason: 'received');
+        expect(find.text('এখনো বাকি'), findsOneWidget);
+        expect(find.text('৳১০০'), findsOneWidget, reason: 'still due');
+
+        await tester.tap(find.text('WhatsApp'));
+        await tester.pumpAndSettle();
+        expect(sender.whatsApp.single.mobile, '01712345678');
+        expect(sender.whatsApp.single.message, contains('এখনো বাকি: ৳১০০'));
+      });
+
+      testWidgets('too much is refused with the reason, and nothing is recorded', (tester) async {
+        await openCollect(tester);
+        await tester.tap(find.text('টাকা নিন'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), '5000');
+        await tester.tap(find.text('টাকা নিলাম'));
+        await tester.pumpAndSettle();
+        expect(find.text('বাকির চেয়ে বেশি নেওয়া যাবে না'), findsOneWidget);
+        expect(find.byType(PaymentReceiptPage), findsNothing);
+        expect(customers.payments, isEmpty);
+      });
+
+      testWidgets('cancelling the dialog records nothing', (tester) async {
+        await openCollect(tester);
+        await tester.tap(find.text('টাকা নিন'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('বাতিল'));
+        await tester.pumpAndSettle();
+        expect(customers.paymentCalls, isEmpty);
+      });
+
+      testWidgets('no button where collecting is not set up', (tester) async {
+        await openCollect(tester, canCollect: false);
+        expect(find.text('টাকা নিন'), findsNothing);
+      });
+
+      testWidgets('no button on a sale that is paid in full', (tester) async {
+        sales.bills
+          ..clear()
+          ..add(Bill(
+            id: 2,
+            customerId: 1,
+            customerName: 'রহিম',
+            paid: 400,
+            at: clock.now(),
+            lines: [Sale(productName: 'পেরেক', unit: 'কেজি', quantity: 4, unitPrice: 100, unitCost: 80, at: clock.now())],
+          ));
+        await openCollect(tester);
+        expect(find.text('টাকা নিন'), findsNothing, reason: 'nothing is due on it');
+      });
+    });
+
+    testWidgets('money received for a due is listed in the account, with a receipt to open', (tester) async {
+      final sender = FakeReceiptSender();
+      await sellNails(2, 100);
+      sales.paymentReceipts.add(PaymentReceipt(
+        payment: Payment(id: 4, customerId: 1, amount: 500, at: clock.now(), receivedBy: 'মালিক'),
+        customerName: 'রহিম',
+        customerWhatsApp: '01712345678',
+        dueAfter: 300,
+      ));
+      tester.view.physicalSize = const Size(900, 2800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(MaterialApp(
+        home: DailySalesPage(viewModel: summaryVm(), screens: _Screens(), shopName: 'হাসান স্টোর', sender: sender),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.text('রহিম'), findsOneWidget);
+      expect(find.text('৳৫০০'), findsOneWidget);
+      expect(find.text('এখনো বাকি: ৳৩০০'), findsOneWidget);
+      expect(find.textContaining('টাকা নেওয়া হয়েছে'), findsOneWidget);
+      expect(find.text('৳২০০'), findsWidgets, reason: 'the sale is still listed, and the totals count only sales');
+
+      await tester.tap(find.text('রহিম'));
+      await tester.pumpAndSettle();
+      expect(find.byType(PaymentReceiptPage), findsOneWidget);
+      expect(find.text('টাকা গ্রহণের রসিদ'), findsWidgets);
+      await tester.tap(find.text('WhatsApp'));
+      await tester.pumpAndSettle();
+      expect(sender.whatsApp.single.mobile, '01712345678');
+      expect(sender.whatsApp.single.message, contains('গ্রহণ: ৳৫০০'));
+      expect(sender.whatsApp.single.message, contains('এখনো বাকি: ৳৩০০'));
+    });
+
+    testWidgets('a payment cannot be swiped away like a sale', (tester) async {
+      sales.paymentReceipts.add(PaymentReceipt(
+        payment: Payment(id: 4, customerId: 1, amount: 500, at: clock.now()),
+        customerName: 'রহিম',
+      ));
+      await openDay(tester);
+      expect(find.text('রহিম'), findsOneWidget);
+      expect(find.byType(Dismissible), findsNothing);
     });
 
     testWidgets('a bill with a due has call and share inside its card; the reminder names the customer and the amount', (tester) async {

@@ -93,6 +93,7 @@ String saleProblemMessage(SaleProblem problem) => switch (problem) {
       SaleProblem.invalidPayment => Bn.saleInvalidPayment,
       SaleProblem.customerRequiredForDue => Bn.saleCustomerRequiredForDue,
       SaleProblem.invalidCustomer => Bn.saleInvalidCustomer,
+      SaleProblem.unknownBill => Bn.saleUnknownBill,
     };
 
 /// A message for any stock or billing rule that was broken, or null if [error]
@@ -149,6 +150,7 @@ String activityGroupLabel(ActivityGroup group) => switch (group) {
 IconData activityIcon(String kind) => switch (kind) {
       ActivityKind.sale => Icons.point_of_sale,
       ActivityKind.saleVoided => Icons.cancel_outlined,
+      ActivityKind.customerAdded => Icons.person_add_alt_1_outlined,
       ActivityKind.paymentCollected => Icons.payments_outlined,
       ActivityKind.restocked => Icons.add_box_outlined,
       ActivityKind.stockAdjusted || ActivityKind.stockCounted => Icons.fact_check_outlined,
@@ -188,6 +190,7 @@ String activitySentence(ActivityEntry e) {
         number('due') > 0 ? money('due') : '',
       ),
     ActivityKind.saleVoided => Bn.activitySaleVoided(toBanglaDigits('${d['billId'] ?? ''}'), money('total')),
+    ActivityKind.customerAdded => Bn.activityCustomerAdded(toBanglaDigits('${d['billId'] ?? ''}'), text('customer')),
     ActivityKind.paymentCollected => Bn.activityPayment(money('amount'), text('customer')),
     ActivityKind.restocked => Bn.activityRestocked(text('product'), qty('quantity')),
     ActivityKind.stockAdjusted => Bn.activityStockAdjusted(text('product'), qty('total')),

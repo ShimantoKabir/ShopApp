@@ -1094,6 +1094,73 @@ void main() {
     });
   });
 
+  group('adding a customer to a sale afterwards', () {
+    Future<Bill> sellWithoutCustomer(_Phone phone, Product nails, {double qty = 2, double? paid}) =>
+        phone.sales.checkout([SaleLine(productId: nails.id!, quantity: qty, unitPrice: 100)], paid: paid, customer: paid == null ? null : _rahim);
+
+    test('the customer reaches the other phones, with the same totals, and it is on record', () async {
+      final s = await shopOnA();
+      final bill = await sellWithoutCustomer(a, s.nails);
+      expect(bill.hasCustomer, isFalse);
+      await shareAndJoin();
+
+      final updated = await b.sales.attachCustomer(bill.id!, _rahim);
+      expect((updated.customerName, updated.customerWhatsApp), ('রহিম', '01712345678'));
+      await a.engine.syncNow();
+
+      final onA = (await a.sales.billById(bill.id!))!;
+      expect((onA.customerName, onA.customerMobile, onA.customerAddress), ('রহিম', '01712345678', 'কাজিপুর'));
+      expect(onA.customerId, isNotNull);
+      expect((await a.customers.byId(onA.customerId!))!.billCount, 1);
+      expect(await a.dump(), await b.dump());
+
+      final entry = (await a.activity.recent(limit: 50)).firstWhere((e) => e.kind == ActivityKind.customerAdded);
+      expect((entry.detail['billId'], entry.detail['customer']), (bill.id, 'রহিম'));
+    });
+
+    test('a number that is already a customer joins that customer, not a second record', () async {
+      final s = await shopOnA();
+      await a.sales.checkout([SaleLine(productId: s.nails.id!, quantity: 1, unitPrice: 100)], customer: _rahim);
+      final later = await sellWithoutCustomer(a, s.nails);
+      final attached = await a.sales.attachCustomer(later.id!, const CustomerInfo(whatsapp: '01712345678'));
+      expect((await a.customers.all()).length, 1);
+      expect((await a.customers.byId(attached.customerId!))!.billCount, 2);
+    });
+
+    test('a missing number, a bad number or an unknown sale is refused and nothing changes', () async {
+      final s = await shopOnA();
+      final free = await sellWithoutCustomer(a, s.nails);
+      await shareAndJoin();
+      await expectLater(
+        b.sales.attachCustomer(free.id!, const CustomerInfo(name: 'রহিম')),
+        throwsA(isA<SaleException>().having((e) => e.problem, 'problem', SaleProblem.contactRequired)),
+      );
+      await expectLater(
+        b.sales.attachCustomer(free.id!, const CustomerInfo(whatsapp: '123')),
+        throwsA(isA<SaleException>().having((e) => e.problem, 'problem', SaleProblem.invalidCustomer)),
+      );
+      await expectLater(
+        b.sales.attachCustomer(999, _rahim),
+        throwsA(isA<SaleException>().having((e) => e.problem, 'problem', SaleProblem.unknownBill)),
+      );
+      // A refused entry is refused the same way on every phone: nothing changes anywhere.
+      await a.engine.syncNow();
+      expect((await b.sales.billById(free.id!))!.hasCustomer, isFalse);
+      expect((await a.sales.billById(free.id!))!.hasCustomer, isFalse);
+      expect(await a.dump(), await b.dump());
+      expect((await a.activity.recent(limit: 50)).where((e) => e.kind == ActivityKind.customerAdded), isEmpty);
+    });
+
+    test('with no signal nothing changes', () async {
+      final s = await shopOnA();
+      final bill = await sellWithoutCustomer(a, s.nails);
+      await shareAndJoin();
+      b.link.offline = true;
+      await expectLater(b.sales.attachCustomer(bill.id!, _rahim), throwsSync(SyncProblem.offline));
+      expect((await b.sales.billById(bill.id!))!.hasCustomer, isFalse);
+    });
+  });
+
   group('category rename', () {
     Matcher throwsCategory(CategoryProblem problem) =>
         throwsA(isA<CategoryException>().having((e) => e.problem, 'problem', problem));

@@ -7,9 +7,9 @@ import 'package:hardware_shop/domain/activity.dart';
 import 'package:hardware_shop/domain/repositories.dart';
 import 'package:hardware_shop/domain/sync.dart';
 import 'package:hardware_shop/domain/users.dart';
-import 'package:hardware_shop/presentation/activity_page.dart';
-import 'package:hardware_shop/presentation/activity_viewmodel.dart';
-import 'package:hardware_shop/presentation/auth_viewmodels.dart';
+import 'package:hardware_shop/presentation/activity/activity_page.dart';
+import 'package:hardware_shop/presentation/activity/activity_viewmodel.dart';
+import 'package:hardware_shop/presentation/auth/auth_viewmodel.dart';
 import 'package:hardware_shop/presentation/components/components.dart';
 import 'package:hardware_shop/presentation/labels.dart';
 import 'package:material_ui/material_ui.dart';
@@ -209,6 +209,7 @@ void main() {
       expect(say(ActivityKind.sale, {'total': 100.0, 'items': 1, 'customer': '', 'due': 0.0}), 'বিক্রি করেছেন: ৳১০০ • ১টি পণ্য');
       expect(say(ActivityKind.saleVoided, {'billId': 7, 'total': 300.0}), 'বিক্রি বাতিল করেছেন: রসিদ নং ৭ • ৳৩০০');
       expect(say(ActivityKind.paymentCollected, {'amount': 50.0, 'customer': 'রহিম'}), 'বাকির টাকা নিয়েছেন: ৳৫০ • রহিম');
+      expect(say(ActivityKind.customerAdded, {'billId': 7, 'customer': 'রহিম'}), 'বিক্রিতে গ্রাহক যোগ করেছেন: রসিদ নং ৭ • রহিম');
     });
 
     test('stock', () {
@@ -267,7 +268,7 @@ void main() {
         seen.addAll(g.kinds);
       }
       expect(seen.toSet(), hasLength(seen.length), reason: 'no kind in two groups');
-      expect(seen, hasLength(25), reason: 'all twenty-five kinds are covered');
+      expect(seen, hasLength(26), reason: 'all twenty-six kinds are covered');
     });
   });
 

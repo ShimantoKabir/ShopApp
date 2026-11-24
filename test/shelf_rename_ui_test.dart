@@ -1,10 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hardware_shop/core/bangla.dart';
 import 'package:hardware_shop/domain/entities.dart';
-import 'package:hardware_shop/presentation/categories_page.dart';
-import 'package:hardware_shop/presentation/locations_page.dart';
+import 'package:hardware_shop/presentation/categories/categories_page.dart';
+import 'package:hardware_shop/presentation/locations/locations_page.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/categories/categories_viewmodel.dart';
+import 'package:hardware_shop/presentation/locations/locations_viewmodel.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';

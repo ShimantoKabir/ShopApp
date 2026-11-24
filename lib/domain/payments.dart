@@ -29,3 +29,23 @@ class PaymentException implements Exception {
   @override
   String toString() => 'PaymentException($problem)';
 }
+
+/// A payment as it appears on its receipt: who paid, how much, and what they
+/// still owed straight after it.
+class PaymentReceipt {
+  final Payment payment;
+  final String customerName;
+  final String customerMobile;
+  final String customerWhatsApp;
+
+  /// What the customer still owed right after this payment (zero if nothing).
+  final double dueAfter;
+
+  const PaymentReceipt({
+    required this.payment,
+    this.customerName = '',
+    this.customerMobile = '',
+    this.customerWhatsApp = '',
+    this.dueAfter = 0,
+  });
+}

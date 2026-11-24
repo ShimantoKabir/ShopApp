@@ -100,6 +100,12 @@ class ReplicatedSalesRepository implements SalesRepository {
   Future<void> voidBill(int billId) => _gateway.write('sale.void', {'billId': billId}, () => _local.voidBill(billId));
 
   @override
+  Future<Bill> attachCustomer(int billId, CustomerInfo customer) => _gateway.write(
+      'sale.attachCustomer',
+      {'billId': billId, 'customer': customerToJson(customer)},
+      () => _local.attachCustomer(billId, customer));
+
+  @override
   Future<List<Bill>> billsOn(DateTime day) => _local.billsOn(day);
 
   @override
@@ -110,6 +116,9 @@ class ReplicatedSalesRepository implements SalesRepository {
 
   @override
   Future<double> collectedOn(DateTime day) => _local.collectedOn(day);
+
+  @override
+  Future<List<PaymentReceipt>> paymentsOn(DateTime day) => _local.paymentsOn(day);
 }
 
 class ReplicatedCustomerRepository implements CustomerRepository {

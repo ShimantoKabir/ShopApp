@@ -3,10 +3,10 @@ import 'package:hardware_shop/core/bangla.dart';
 import 'package:hardware_shop/domain/repositories.dart';
 import 'package:hardware_shop/domain/settings.dart';
 import 'package:hardware_shop/domain/users.dart';
-import 'package:hardware_shop/presentation/auth_viewmodels.dart';
-import 'package:hardware_shop/presentation/settings_page.dart';
-import 'package:hardware_shop/presentation/settings_viewmodel.dart';
-import 'package:hardware_shop/presentation/users_page.dart';
+import 'package:hardware_shop/presentation/users/users_viewmodel.dart';
+import 'package:hardware_shop/presentation/settings/settings_page.dart';
+import 'package:hardware_shop/presentation/settings/settings_viewmodel.dart';
+import 'package:hardware_shop/presentation/users/users_page.dart';
 import 'package:material_ui/material_ui.dart';
 
 class _Memory implements SettingsStore {

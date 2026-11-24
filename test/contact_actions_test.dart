@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hardware_shop/core/bangla.dart';
 import 'package:hardware_shop/core/language.dart';
 import 'package:hardware_shop/domain/settings.dart';
-import 'package:hardware_shop/presentation/receipt_text.dart';
+import 'package:hardware_shop/presentation/receipt/receipt_text.dart';
 import 'package:hardware_shop/presentation/widgets/contact_actions.dart';
 import 'package:material_ui/material_ui.dart';
 

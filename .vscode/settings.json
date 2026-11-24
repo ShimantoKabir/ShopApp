@@ -20,7 +20,8 @@
     "**/build": true,
     "**/.dart_tool": true
   },
-
+  "editor.fontSize": 15,
+  "window.zoomLevel": 0.8,
   // Recommended editor behaviour for Dart/Flutter.
   "[dart]": {
     "editor.formatOnSave": true,

@@ -2,12 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hardware_shop/data/platform_receipt_sender.dart';
 import 'package:hardware_shop/domain/entities.dart';
 import 'package:hardware_shop/domain/sales.dart';
+import 'package:hardware_shop/domain/services.dart';
 import 'package:hardware_shop/domain/stock.dart';
 import 'package:hardware_shop/domain/sync.dart';
-import 'package:hardware_shop/presentation/checkout_page.dart';
-import 'package:hardware_shop/presentation/receipt_page.dart';
+import 'package:hardware_shop/presentation/checkout/checkout_page.dart';
+import 'package:hardware_shop/presentation/receipt/receipt_page.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/sell/sell_viewmodel.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';
@@ -113,7 +114,7 @@ void main() {
   });
 
   /// Opens the checkout page on top of a host page, as the sell screen does.
-  Future<void> openCheckout(WidgetTester tester) async {
+  Future<void> openCheckout(WidgetTester tester, {ContactPicker? picker}) async {
     tester.view.physicalSize = const Size(900, 3600);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -121,7 +122,7 @@ void main() {
       home: Builder(
         builder: (context) => Scaffold(
           body: ElevatedButton(
-            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CheckoutPage(viewModel: vm, screens: _Screens()))),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => CheckoutPage(viewModel: vm, screens: _Screens(), contactPicker: picker))),
             child: const Text('open-checkout'),
           ),
         ),
@@ -248,6 +249,46 @@ void main() {
       await tester.enterText(field(nameLabel), 'করিম');
       await confirm(tester);
       expect(sales.calls.single, 'checkout 1x2.0@100.0 paid=null name=করিম mobile=01911111111 nid= address=বাজার রোড whatsapp=01911111111');
+    });
+
+    testWidgets('a customer can be chosen from the phone contacts: number and name fill in, and are sent', (tester) async {
+      final picker = FakeContactPicker(const PickedContact(name: 'জামাল', number: '+880 1911-111111'));
+      await openCheckout(tester, picker: picker);
+      await tester.tap(find.text(header));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('ফোনের কন্টাক্ট থেকে নিন'));
+      await tester.pumpAndSettle();
+      expect(picker.opened, 1);
+      expect(textOf(tester, phoneLabel), '01911111111', reason: 'tidied into the usual form');
+      expect(textOf(tester, nameLabel), 'জামাল');
+      await tester.enterText(field(addressLabel), 'বাজার রোড');
+      await confirm(tester);
+      expect(sales.calls.single, 'checkout 1x2.0@100.0 paid=null name=জামাল mobile=01911111111 nid= address=বাজার রোড whatsapp=01911111111');
+    });
+
+    testWidgets('a name already typed is kept when a contact is chosen; backing out of the chooser changes nothing', (tester) async {
+      final picker = FakeContactPicker(const PickedContact(name: 'জামাল', number: '01911111111'));
+      await openCheckout(tester, picker: picker);
+      await tester.tap(find.text(header));
+      await tester.pumpAndSettle();
+      await tester.enterText(field(nameLabel), 'করিম');
+      await tester.tap(find.byTooltip('ফোনের কন্টাক্ট থেকে নিন'));
+      await tester.pumpAndSettle();
+      expect(textOf(tester, nameLabel), 'করিম');
+      expect(textOf(tester, phoneLabel), '01911111111');
+
+      picker.next = null; // cancelled in the chooser
+      await tester.enterText(field(phoneLabel), '01711111111');
+      await tester.tap(find.byTooltip('ফোনের কন্টাক্ট থেকে নিন'));
+      await tester.pumpAndSettle();
+      expect(textOf(tester, phoneLabel), '01711111111');
+    });
+
+    testWidgets('with no contact chooser there is no button', (tester) async {
+      await openCheckout(tester);
+      await tester.tap(find.text(header));
+      await tester.pumpAndSettle();
+      expect(find.byTooltip('ফোনের কন্টাক্ট থেকে নিন'), findsNothing);
     });
 
     testWidgets('an optional number must still be valid', (tester) async {

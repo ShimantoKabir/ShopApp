@@ -2,7 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../domain/entities.dart';
 import '../domain/sales.dart';
-import 'viewmodels.dart';
+import 'sell/sell_viewmodel.dart';
 
 /// Pages ask this abstraction for other screens instead of constructing
 /// concrete pages (and their dependencies) themselves.

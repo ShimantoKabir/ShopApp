@@ -100,6 +100,9 @@ class AsyncListView<T> extends StatelessWidget {
   /// Replaces the default "delete?" confirmation for swipe-to-delete.
   final Future<bool> Function(BuildContext context)? deleteConfirm;
 
+  /// When given, only the rows it returns true for can be swiped away.
+  final bool Function(T item)? canDelete;
+
   const AsyncListView({
     super.key,
     required this.items,
@@ -109,6 +112,7 @@ class AsyncListView<T> extends StatelessWidget {
     this.itemKey,
     this.onDelete,
     this.deleteConfirm,
+    this.canDelete,
   }) : assert(onDelete == null || itemKey != null, 'itemKey is required when onDelete is set');
 
   @override
@@ -122,7 +126,7 @@ class AsyncListView<T> extends StatelessWidget {
       itemBuilder: (context, i) {
         final item = items[i];
         final child = itemBuilder(context, item);
-        if (onDelete == null) return child;
+        if (onDelete == null || (canDelete != null && !canDelete!(item))) return child;
         return SwipeToDelete(
           itemKey: itemKey!(item),
           onDelete: () => onDelete!(item),

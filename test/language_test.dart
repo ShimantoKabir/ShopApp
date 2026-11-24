@@ -8,10 +8,10 @@ import 'package:hardware_shop/core/language.dart';
 import 'package:hardware_shop/data/starter_categories.dart';
 import 'package:hardware_shop/domain/settings.dart';
 import 'package:hardware_shop/main.dart';
-import 'package:hardware_shop/presentation/language_viewmodel.dart';
+import 'package:hardware_shop/presentation/settings/language_viewmodel.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
-import 'package:hardware_shop/presentation/settings_page.dart';
-import 'package:hardware_shop/presentation/settings_viewmodel.dart';
+import 'package:hardware_shop/presentation/settings/settings_page.dart';
+import 'package:hardware_shop/presentation/settings/settings_viewmodel.dart';
 
 class _Memory implements SettingsStore {
   final Map<String, String> values = {};

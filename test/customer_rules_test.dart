@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hardware_shop/domain/customer_rules.dart';
 import 'package:hardware_shop/domain/sales.dart';
-import 'package:hardware_shop/presentation/receipt_text.dart';
+import 'package:hardware_shop/presentation/receipt/receipt_text.dart';
 
 void main() {
   group('mobile numbers', () {

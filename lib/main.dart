@@ -9,10 +9,10 @@ import 'core/service_locator.dart';
 import 'data/sync/sync_engine.dart';
 import 'domain/settings.dart';
 import 'presentation/app_errors.dart';
-import 'presentation/language_viewmodel.dart';
+import 'presentation/settings/language_viewmodel.dart';
 import 'presentation/screen_factory.dart';
-import 'presentation/settings_viewmodel.dart';
-import 'presentation/shop_name_viewmodel.dart';
+import 'presentation/settings/settings_viewmodel.dart';
+import 'presentation/settings/shop_name_viewmodel.dart';
 import 'presentation/theme/app_theme.dart';
 
 Future<void> main() async {

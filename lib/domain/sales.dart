@@ -179,6 +179,9 @@ enum SaleProblem {
 
   /// A mobile number or NID was entered but is not valid.
   invalidCustomer,
+
+  /// There is no such bill (for example it was cancelled on another phone).
+  unknownBill,
 }
 
 /// A billing rule was broken. Carries a machine-readable [problem] so the UI

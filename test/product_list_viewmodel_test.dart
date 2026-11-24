@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hardware_shop/domain/entities.dart';
 import 'package:hardware_shop/domain/stock.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/product_list/product_list_viewmodel.dart';
+import 'package:hardware_shop/presentation/product_form/product_form_viewmodel.dart';
+import 'package:hardware_shop/presentation/locations/locations_viewmodel.dart';
 
 import 'fakes.dart';
 

@@ -135,6 +135,15 @@ class FakeSalesRepository implements SalesRepository {
   @override
   Future<double> collectedOn(DateTime day) async => collected;
 
+  /// What the daily account lists as received.
+  final List<PaymentReceipt> paymentReceipts = [];
+
+  @override
+  Future<List<PaymentReceipt>> paymentsOn(DateTime day) async => [
+        for (final r in paymentReceipts)
+          if (r.payment.at.year == day.year && r.payment.at.month == day.month && r.payment.at.day == day.day) r,
+      ];
+
   @override
   Future<List<Bill>> billsOfCustomer(int customerId) async =>
       bills.where((b) => b.customerId == customerId).toList().reversed.toList();
@@ -176,6 +185,26 @@ class FakeSalesRepository implements SalesRepository {
     );
     bills.add(bill);
     return bill;
+  }
+
+  @override
+  Future<Bill> attachCustomer(int billId, CustomerInfo customer) async {
+    calls.add('attach $billId name=${customer.name} mobile=${customer.mobile} whatsapp=${customer.whatsapp}');
+    if (failWith != null) throw failWith!;
+    final i = bills.indexWhere((b) => b.id == billId);
+    if (i == -1) throw const SaleException(SaleProblem.unknownBill);
+    final b = bills[i];
+    return bills[i] = Bill(
+      id: b.id,
+      customerName: customer.name.trim(),
+      customerMobile: customer.mobile,
+      customerAddress: customer.address,
+      customerWhatsApp: customer.whatsapp,
+      paid: b.paid,
+      at: b.at,
+      lines: b.lines,
+      soldBy: b.soldBy,
+    );
   }
 
   @override
@@ -349,6 +378,19 @@ class FakeLocationRepository implements LocationRepository {
 }
 
 /// Records the calls and shares a screen asked for.
+/// Stands in for the phone's contact chooser: "picks" whatever [next] is.
+class FakeContactPicker implements ContactPicker {
+  PickedContact? next;
+  int opened = 0;
+  FakeContactPicker([this.next]);
+
+  @override
+  Future<PickedContact?> pick() async {
+    opened++;
+    return next;
+  }
+}
+
 class FakeContactLauncher implements ContactLauncher {
   final List<String> calls = [];
   final List<String> shared = [];

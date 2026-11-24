@@ -3,7 +3,7 @@ import 'package:hardware_shop/domain/entities.dart';
 import 'package:hardware_shop/domain/import/csv_parser.dart';
 import 'package:hardware_shop/domain/import/csv_source.dart';
 import 'package:hardware_shop/domain/import/product_importer.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/import_products/import_viewmodel.dart';
 
 import 'fakes.dart';
 

@@ -4,9 +4,9 @@ import 'package:hardware_shop/core/language.dart';
 import 'package:hardware_shop/domain/sales.dart';
 import 'package:hardware_shop/domain/settings.dart';
 import 'package:hardware_shop/domain/users.dart';
-import 'package:hardware_shop/presentation/home_shell.dart';
-import 'package:hardware_shop/presentation/receipt_page.dart';
-import 'package:hardware_shop/presentation/receipt_text.dart';
+import 'package:hardware_shop/presentation/home_shell/home_shell.dart';
+import 'package:hardware_shop/presentation/receipt/receipt_page.dart';
+import 'package:hardware_shop/presentation/receipt/receipt_text.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
 import 'package:material_ui/material_ui.dart';
 

@@ -4,6 +4,7 @@ import 'users.dart';
 abstract final class ActivityKind {
   static const sale = 'sale';
   static const saleVoided = 'saleVoided';
+  static const customerAdded = 'customerAdded';
   static const paymentCollected = 'paymentCollected';
   static const restocked = 'restocked';
   static const stockAdjusted = 'stockAdjusted';
@@ -45,7 +46,12 @@ enum ActivityGroup {
   /// The kinds that belong to this group (empty = all of them).
   Set<String> get kinds => switch (this) {
         ActivityGroup.all => const {},
-        ActivityGroup.sales => const {ActivityKind.sale, ActivityKind.saleVoided, ActivityKind.paymentCollected},
+        ActivityGroup.sales => const {
+            ActivityKind.sale,
+            ActivityKind.saleVoided,
+            ActivityKind.customerAdded,
+            ActivityKind.paymentCollected,
+          },
         ActivityGroup.stock => const {
             ActivityKind.restocked,
             ActivityKind.stockAdjusted,

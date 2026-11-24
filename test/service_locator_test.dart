@@ -6,20 +6,29 @@ import 'package:hardware_shop/domain/repositories.dart';
 import 'package:hardware_shop/domain/services.dart';
 import 'package:hardware_shop/domain/settings.dart';
 import 'package:hardware_shop/domain/users.dart';
-import 'package:hardware_shop/presentation/auth_viewmodels.dart';
-import 'package:hardware_shop/presentation/settings_viewmodel.dart';
-import 'package:hardware_shop/presentation/shop_name_viewmodel.dart';
+import 'package:hardware_shop/presentation/auth/auth_viewmodel.dart';
+import 'package:hardware_shop/presentation/users/users_viewmodel.dart';
+import 'package:hardware_shop/presentation/profile/profile_viewmodel.dart';
+import 'package:hardware_shop/presentation/settings/settings_viewmodel.dart';
+import 'package:hardware_shop/presentation/settings/shop_name_viewmodel.dart';
 import 'package:hardware_shop/domain/shop.dart';
-import 'package:hardware_shop/presentation/sync_viewmodel.dart';
-import 'package:hardware_shop/presentation/activity_viewmodel.dart';
+import 'package:hardware_shop/presentation/sync/sync_viewmodel.dart';
+import 'package:hardware_shop/presentation/activity/activity_viewmodel.dart';
 import 'package:hardware_shop/domain/activity.dart';
 import 'package:hardware_shop/data/replicated_repositories.dart';
 import 'package:hardware_shop/data/sync/sync_engine.dart';
 import 'package:hardware_shop/domain/sync.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
-import 'package:hardware_shop/presentation/customer_viewmodels.dart';
-import 'package:hardware_shop/presentation/dashboard_viewmodel.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/customers/customers_viewmodel.dart';
+import 'package:hardware_shop/presentation/customer_detail/customer_detail_viewmodel.dart';
+import 'package:hardware_shop/presentation/dashboard/dashboard_viewmodel.dart';
+import 'package:hardware_shop/presentation/product_list/product_list_viewmodel.dart';
+import 'package:hardware_shop/presentation/product_form/product_form_viewmodel.dart';
+import 'package:hardware_shop/presentation/categories/categories_viewmodel.dart';
+import 'package:hardware_shop/presentation/locations/locations_viewmodel.dart';
+import 'package:hardware_shop/presentation/import_products/import_viewmodel.dart';
+import 'package:hardware_shop/presentation/sell/sell_viewmodel.dart';
+import 'package:hardware_shop/presentation/daily_sales/daily_sales_viewmodel.dart';
 
 /// Guards the composition root: every registration must be resolvable.
 /// (A wrong registration only fails at runtime, so unit tests of the pieces

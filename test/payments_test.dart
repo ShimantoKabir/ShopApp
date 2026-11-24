@@ -8,9 +8,10 @@ import 'package:hardware_shop/domain/entities.dart';
 import 'package:hardware_shop/domain/payments.dart';
 import 'package:hardware_shop/domain/sales.dart';
 import 'package:hardware_shop/domain/services.dart';
-import 'package:hardware_shop/presentation/customer_detail_page.dart';
-import 'package:hardware_shop/presentation/customer_viewmodels.dart';
-import 'package:hardware_shop/presentation/receipt_text.dart';
+import 'package:hardware_shop/presentation/customer_detail/customer_detail_page.dart';
+import 'package:hardware_shop/presentation/customer_detail/customer_detail_viewmodel.dart';
+import 'package:hardware_shop/presentation/receipt/payment_receipt_page.dart';
+import 'package:hardware_shop/presentation/receipt/receipt_text.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:path/path.dart' as p;
@@ -101,6 +102,34 @@ void main() {
       rahimId = (await customers.all()).single.id;
       clock.current = DateTime(2026, 11, 22, 15);
     }
+
+    test('the payments of a day are listed with who paid and what they still owed right after', () async {
+      await rahimOwes(); // owes 800
+      clock.current = DateTime(2026, 11, 22, 15);
+      await customers.collectPayment(rahimId, 200); // 600 left
+      clock.current = DateTime(2026, 11, 22, 16);
+      await customers.collectPayment(rahimId, 600); // nothing left
+      await buy(rahim, 2, paid: 0, at: DateTime(2026, 11, 23, 9)); // owes 200 again, the next day
+
+      final day = await sales.paymentsOn(DateTime(2026, 11, 22));
+      expect(day.map((r) => r.payment.amount), [600, 200], reason: 'newest first');
+      expect(day.map((r) => r.dueAfter), [0, 600], reason: 'what was owed right after each one');
+      expect((day.first.customerName, day.first.customerWhatsApp), ('রহিম', '01712345678'));
+      expect(day.first.payment.at, DateTime(2026, 11, 22, 16));
+
+      expect(await sales.paymentsOn(DateTime(2026, 11, 21)), isEmpty);
+      expect(await sales.paymentsOn(DateTime(2026, 11, 23)), isEmpty, reason: 'a sale is not a payment');
+    });
+
+    test('a customer with a due made on the same day: the receipt counts only what was owed by then', () async {
+      await buy(karim, 3, paid: 0, at: DateTime(2026, 11, 22, 9)); // owes 300
+      final id = (await customers.all()).firstWhere((c) => c.name == 'করিম').id;
+      clock.current = DateTime(2026, 11, 22, 11);
+      await customers.collectPayment(id, 100);
+      await buy(karim, 1, paid: 0, at: DateTime(2026, 11, 22, 13)); // owes 100 more later that day
+      final receipts = await sales.paymentsOn(DateTime(2026, 11, 22));
+      expect(receipts.single.dueAfter, 200, reason: 'the later bill is not part of it');
+    });
 
     test('a part payment lowers the due and goes to the oldest bill first', () async {
       await rahimOwes();
@@ -317,7 +346,11 @@ void main() {
       await tester.tap(find.text(Bn.collectConfirm));
       await tester.pumpAndSettle();
       expect(customers.paymentCalls, ['collect 1 800.0']);
-      expect(find.text('৳৮০০ নেওয়া হয়েছে। আর কোনো বাকি নেই'), findsOneWidget);
+      // The new receipt is shown at once.
+      expect(find.byType(PaymentReceiptPage), findsOneWidget);
+      expect(find.text('টাকা গ্রহণের রসিদ'), findsWidgets);
+      expect(find.text('৳৮০০'), findsWidgets, reason: 'what was received');
+      expect(find.text('সব বাকি পরিশোধ হয়েছে'), findsOneWidget);
 
       await tester.tap(find.text(Bn.receiptDone));
       await tester.pumpAndSettle();
@@ -335,11 +368,26 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(customers.paymentCalls, ['collect 1 500.0']);
-      expect(find.text('৳৫০০ নেওয়া হয়েছে। এখনো বাকি ৳৩০০'), findsOneWidget);
+      expect(find.byType(PaymentReceiptPage), findsOneWidget);
+      expect(find.text('৳৫০০'), findsOneWidget, reason: 'what was received');
+      expect(find.text('এখনো বাকি'), findsOneWidget);
+      expect(find.text('৳৩০০'), findsOneWidget, reason: 'what is still due, on the receipt');
       await tester.tap(find.text(Bn.receiptDone));
       await tester.pumpAndSettle();
       expect(find.text('৳৩০০'), findsWidgets, reason: 'the new due is shown');
       expect(find.text(Bn.collectPayment), findsOneWidget, reason: 'still something to collect');
+    });
+
+    testWidgets('the receipt can be shared on any app too', (tester) async {
+      await open(tester);
+      await tester.tap(find.text(Bn.collectPayment));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '500');
+      await tester.tap(find.text(Bn.collectConfirm));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('শেয়ার'));
+      await tester.pumpAndSettle();
+      expect(sender.shared.single, contains('গ্রহণ: ৳৫০০'));
     });
 
     testWidgets('afterwards the receipt can go to the customer\'s WhatsApp', (tester) async {
@@ -349,7 +397,7 @@ void main() {
       await tester.enterText(find.byType(TextField), '500');
       await tester.tap(find.text(Bn.collectConfirm));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(Bn.sendPaymentReceipt));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
 
       expect(sender.whatsApp, hasLength(1));

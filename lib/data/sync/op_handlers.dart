@@ -85,6 +85,10 @@ class OpHandlers {
             customer: customerFromJson((a['customer'] as Map?)?.cast<String, dynamic>()),
             paid: (a['paid'] as num?)?.toDouble(),
           ),
+      'sale.attachCustomer': (a) => _sales.attachCustomer(
+            i(a, 'billId'),
+            customerFromJson((a['customer'] as Map).cast<String, dynamic>())!,
+          ),
       'sale.void': (a) => _sales.voidBill(i(a, 'billId')),
       'payment.collect': (a) => _customers.collectPayment(i(a, 'customerId'), d(a, 'amount')),
       'category.add': (a) => _categories.add(s(a, 'name')),

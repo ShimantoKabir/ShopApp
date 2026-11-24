@@ -13,6 +13,7 @@ import '../data/sync/activity_recorder.dart';
 import '../data/sqlite_dashboard_repository.dart';
 import '../data/sqlite_repositories.dart';
 import '../data/file_picker_csv_source.dart';
+import '../data/platform_contact_picker.dart';
 import '../data/platform_receipt_sender.dart';
 import '../data/system_services.dart';
 import '../domain/import/csv_source.dart';
@@ -25,16 +26,26 @@ import '../domain/services.dart';
 import '../domain/settings.dart';
 import '../domain/sync.dart';
 import '../domain/users.dart';
-import '../presentation/activity_viewmodel.dart';
-import '../presentation/auth_viewmodels.dart';
-import '../presentation/language_viewmodel.dart';
-import '../presentation/settings_viewmodel.dart';
-import '../presentation/shop_name_viewmodel.dart';
-import '../presentation/sync_viewmodel.dart';
+import '../presentation/activity/activity_viewmodel.dart';
+import '../presentation/auth/auth_viewmodel.dart';
+import '../presentation/users/users_viewmodel.dart';
+import '../presentation/profile/profile_viewmodel.dart';
+import '../presentation/settings/language_viewmodel.dart';
+import '../presentation/settings/settings_viewmodel.dart';
+import '../presentation/settings/shop_name_viewmodel.dart';
+import '../presentation/sync/sync_viewmodel.dart';
 import '../presentation/screen_factory.dart';
-import '../presentation/customer_viewmodels.dart';
-import '../presentation/dashboard_viewmodel.dart';
-import '../presentation/viewmodels.dart';
+import '../presentation/customers/customers_viewmodel.dart';
+import '../presentation/customer_detail/customer_detail_viewmodel.dart';
+import '../presentation/dashboard/dashboard_viewmodel.dart';
+import '../presentation/product_list/product_list_viewmodel.dart';
+import '../presentation/product_form/product_form_viewmodel.dart';
+import '../presentation/categories/categories_viewmodel.dart';
+import '../presentation/location_types/location_types_viewmodel.dart';
+import '../presentation/locations/locations_viewmodel.dart';
+import '../presentation/import_products/import_viewmodel.dart';
+import '../presentation/sell/sell_viewmodel.dart';
+import '../presentation/daily_sales/daily_sales_viewmodel.dart';
 import 'app_config.dart';
 import 'get_it_screen_factory.dart';
 
@@ -102,6 +113,7 @@ void setupServiceLocator() {
   // Import
   sl.registerLazySingleton<ReceiptSender>(PlatformReceiptSender.new);
   sl.registerLazySingleton<ContactLauncher>(PlatformContactLauncher.new);
+  sl.registerLazySingleton<ContactPicker>(PlatformContactPicker.new);
   sl.registerLazySingleton<CsvSource>(FilePickerCsvSource.new);
   sl.registerLazySingleton<ProductImporter>(() => ProductImporter(sl(), sl()));
 
@@ -123,7 +135,7 @@ void setupServiceLocator() {
   sl.registerFactory<LocationTypesViewModel>(() => LocationTypesViewModel(sl()));
   // One cart for the whole app, so what was added stays while moving between screens.
   sl.registerLazySingleton<SellViewModel>(() => SellViewModel(sl(), sl(), sl(), sl(), sync: sl<SyncService>()));
-  sl.registerFactory<SalesSummaryViewModel>(() => SalesSummaryViewModel(sl(), sl()));
+  sl.registerFactory<SalesSummaryViewModel>(() => SalesSummaryViewModel(sl(), sl(), customers: sl()));
   sl.registerFactory<CustomerListViewModel>(() => CustomerListViewModel(sl()));
   sl.registerFactory<CustomerDetailViewModel>(() => CustomerDetailViewModel(sl(), sl()));
   sl.registerFactory<DashboardViewModel>(() => DashboardViewModel(sl(), sl()));

@@ -3,9 +3,10 @@ import 'package:hardware_shop/domain/entities.dart';
 import 'package:hardware_shop/domain/repositories.dart';
 import 'package:hardware_shop/domain/sales.dart';
 import 'package:hardware_shop/domain/stock.dart';
-import 'package:hardware_shop/presentation/product_form_page.dart';
+import 'package:hardware_shop/presentation/product_form/product_form_page.dart';
 import 'package:hardware_shop/presentation/screen_factory.dart';
-import 'package:hardware_shop/presentation/viewmodels.dart';
+import 'package:hardware_shop/presentation/product_form/product_form_viewmodel.dart';
+import 'package:hardware_shop/presentation/sell/sell_viewmodel.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';

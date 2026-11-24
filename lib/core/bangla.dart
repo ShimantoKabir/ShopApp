@@ -171,6 +171,8 @@ class Bn {
       Language.isBangla ? 'বিক্রি করেছেন: $total • ${toBanglaDigits('$items')}টি পণ্য${customer.isEmpty ? '' : ' • $customer'}${due.isEmpty ? '' : ' • বাকি $due'}' : 'Sold: $total • ${items == 1 ? '1 item' : '$items items'}${customer.isEmpty ? '' : ' • $customer'}${due.isEmpty ? '' : ' • due $due'}';
   static String activitySaleVoided(String bill, String total) =>
       Language.isBangla ? 'বিক্রি বাতিল করেছেন: রসিদ নং $bill${total.isEmpty ? '' : ' • $total'}' : 'Cancelled a sale: receipt no. $bill${total.isEmpty ? '' : ' • $total'}';
+  static String activityCustomerAdded(String bill, String customer) =>
+      Language.isBangla ? 'বিক্রিতে গ্রাহক যোগ করেছেন: রসিদ নং $bill${customer.isEmpty ? '' : ' • $customer'}' : 'Added a customer to a sale: receipt no. $bill${customer.isEmpty ? '' : ' • $customer'}';
   static String activityPayment(String amount, String customer) =>
       Language.isBangla ? 'বাকির টাকা নিয়েছেন: $amount${customer.isEmpty ? '' : ' • $customer'}' : 'Took money for a due: $amount${customer.isEmpty ? '' : ' • $customer'}';
   static String activityRestocked(String product, String quantity) =>
@@ -380,7 +382,6 @@ class Bn {
   static String get paymentHistory => _t('টাকা নেওয়ার ইতিহাস', 'Payment history');
   static String get noPayments => _t('এখনো কোনো বাকি আদায় হয়নি', 'No dues collected yet');
   static String get paymentReceivedTitle => _t('টাকা নেওয়া হয়েছে', 'Money received');
-  static String get sendPaymentReceipt => _t('রসিদ পাঠান', 'Send receipt');
   static String get paymentReceiptTitle => _t('টাকা গ্রহণের রসিদ', 'Payment receipt');
   static String get paymentReceivedLabel => _t('গ্রহণ', 'Received');
   static String get paymentRemainingLabel => _t('এখনো বাকি', 'Still due');
@@ -388,8 +389,6 @@ class Bn {
   static String get collectedLabel => _t('বাকি আদায়', 'Dues collected');
   static String get dashCollected => _t('বাকির টাকা পেয়েছি', 'Dues received');
   static String get dashNewDue => _t('এই সময়ের বাকি', 'Due in this period');
-  static String paymentDone(double amount, double left) =>
-      Language.isBangla ? left > 0 ? '${formatMoney(amount)} নেওয়া হয়েছে। এখনো বাকি ${formatMoney(left)}' : '${formatMoney(amount)} নেওয়া হয়েছে। আর কোনো বাকি নেই' : left > 0 ? '${formatMoney(amount)} received. Still due ${formatMoney(left)}' : '${formatMoney(amount)} received. Nothing more is due';
   static String customerCount(int n) =>
       Language.isBangla ? '${toBanglaDigits('$n')} জন গ্রাহক' : n == 1 ? '1 customer' : '$n customers';
   static String customerTimes(int n) =>
@@ -508,7 +507,6 @@ class Bn {
   static String get contactSms => _t('এসএমএস পাঠান', 'Send SMS');
   static String get contactWhatsApp => _t('WhatsApp-এ পাঠান', 'Send on WhatsApp');
   static String get contactFailed => _t('খোলা যায়নি। নম্বরটি ঠিক আছে কিনা দেখুন।', 'Could not open it. Check the number.');
-  static String get remindDue => _t('বাকির তাগাদা', 'Remind about due');
   static String dueReminder(String name, double due, String shop) => Language.isBangla
       ? '${name.isEmpty ? '' : '$name, '}আসসালামু আলাইকুম। $shop-এ আপনার ${formatMoney(due)} বাকি আছে। সুবিধামতো পরিশোধ করবেন। ধন্যবাদ।'
       : '${name.isEmpty ? '' : '$name, '}Assalamu alaikum. You have ${formatMoney(due)} due at $shop. Please pay when convenient. Thank you.';
@@ -541,7 +539,12 @@ class Bn {
   static String get receiptNo => _t('রসিদ নং', 'Receipt no.');
   static String get receiptThanks => _t('ধন্যবাদ! আবার আসবেন।', 'Thank you! Please come again.');
   static String get customerLabel => _t('গ্রাহক', 'Customer');
-  static String get retailSale => _t('খুচরা বিক্রি', 'Retail sale');
+  static String get saleUnknownBill => _t('এই বিক্রি আর পাওয়া যাচ্ছে না।', 'This sale can no longer be found.');
+  static String get pickContact => _t('ফোনের কন্টাক্ট থেকে নিন', 'Choose from contacts');
+  static String get addCustomer => _t('গ্রাহক যোগ করুন', 'Add customer');
+  static String get changeCustomer => _t('গ্রাহক বদলান', 'Change customer');
+  static String get customerAdded => _t('গ্রাহক যোগ হয়েছে', 'Customer added');
+  static String get retailSale =>_t('খুচরা বিক্রি', 'Retail sale');
   static String get sendWhatsApp => _t('WhatsApp', 'WhatsApp');
   static String get shareReceipt => _t('শেয়ার', 'Share');
   static String get receiptDone => _t('শেষ', 'Done');

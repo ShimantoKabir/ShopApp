@@ -646,6 +646,45 @@ class SqliteSalesRepository implements SalesRepository {
     });
   }
 
+  @override
+  Future<Bill> attachCustomer(int billId, CustomerInfo customer) async {
+    final info = _clean(customer);
+    if (info.whatsapp.isEmpty && info.mobile.isEmpty) throw const SaleException(SaleProblem.contactRequired);
+    if (info.whatsapp.isNotEmpty && !isValidMobile(info.whatsapp)) throw const SaleException(SaleProblem.invalidCustomer);
+    if (info.mobile.isNotEmpty && !isValidMobile(info.mobile)) throw const SaleException(SaleProblem.invalidCustomer);
+    if (info.nid.isNotEmpty && !isValidNid(info.nid)) throw const SaleException(SaleProblem.invalidCustomer);
+
+    final db = await _database.db;
+    return db.transaction((txn) async {
+      final rows = await txn.query('bills', where: 'id = ?', whereArgs: [billId], limit: 1);
+      if (rows.isEmpty) throw const SaleException(SaleProblem.unknownBill);
+      final lines = (await _linesFor(txn, [billId]))[billId] ?? const <Sale>[];
+      final before = _billFromRow(rows.first, lines);
+      if (before.due > 0 &&
+          (info.name.isEmpty ||
+              info.address.isEmpty ||
+              !(isValidMobile(info.mobile) || isValidMobile(info.whatsapp)) ||
+              !isValidNid(info.nid))) {
+        throw const SaleException(SaleProblem.customerRequiredForDue);
+      }
+      final customerId = await _saveCustomer(txn, info, _clock.now());
+      await txn.update(
+        'bills',
+        {
+          'customer_id': customerId,
+          'customer_name': info.name,
+          'customer_mobile': info.mobile,
+          'customer_address': info.address,
+          'customer_whatsapp': info.whatsapp,
+        },
+        where: 'id = ?',
+        whereArgs: [billId],
+      );
+      final updated = await txn.query('bills', where: 'id = ?', whereArgs: [billId], limit: 1);
+      return _billFromRow(updated.first, lines);
+    });
+  }
+
   /// Remembers the customer. Matched by WhatsApp number (every sale has one),
   /// or by mobile number for customers saved before WhatsApp was required. A
   /// repeat customer keeps their record and gets anything newly given filled in.
@@ -851,6 +890,61 @@ class SqliteSalesRepository implements SalesRepository {
       [start.millisecondsSinceEpoch, end.millisecondsSinceEpoch],
     );
     return (rows.first['total'] as num).toDouble();
+  }
+
+  @override
+  Future<List<PaymentReceipt>> paymentsOn(DateTime day) async {
+    final db = await _database.db;
+    final start = DateTime(day.year, day.month, day.day);
+    final end = DateTime(day.year, day.month, day.day + 1);
+    final rows = await db.rawQuery(
+      '''SELECT p.id AS id, p.customer_id AS customer_id, p.amount AS amount, p.at AS at, p.user_name AS user_name,
+                c.name AS name, c.mobile AS mobile, c.whatsapp AS whatsapp
+         FROM payments p LEFT JOIN customers c ON c.id = p.customer_id
+         WHERE p.at >= ? AND p.at < ?
+         ORDER BY p.at DESC, p.id DESC''',
+      [start.millisecondsSinceEpoch, end.millisecondsSinceEpoch],
+    );
+    final receipts = <PaymentReceipt>[];
+    for (final r in rows) {
+      final customerId = r['customer_id'] as int;
+      final at = r['at'] as int;
+      final id = r['id'] as int;
+      receipts.add(PaymentReceipt(
+        payment: Payment(
+          id: id,
+          customerId: customerId,
+          amount: (r['amount'] as num).toDouble(),
+          at: DateTime.fromMillisecondsSinceEpoch(at),
+          receivedBy: r['user_name'] as String? ?? '',
+        ),
+        customerName: r['name'] as String? ?? '',
+        customerMobile: r['mobile'] as String? ?? '',
+        customerWhatsApp: r['whatsapp'] as String? ?? '',
+        dueAfter: await _dueAfter(db, customerId, at, id),
+      ));
+    }
+    return receipts;
+  }
+
+  /// What a customer still owed right after one payment: what their bills up
+  /// to then left unpaid when they were made, less every payment up to and
+  /// including this one.
+  Future<double> _dueAfter(DatabaseExecutor db, int customerId, int at, int paymentId) async {
+    final owed = await db.rawQuery(
+      '''SELECT COALESCE(SUM(t.total - (t.paid - t.allocated)), 0) AS v FROM (
+           SELECT b.paid AS paid,
+                  COALESCE((SELECT SUM(a.amount) FROM payment_allocations a WHERE a.bill_id = b.id), 0) AS allocated,
+                  COALESCE((SELECT SUM(s.quantity * s.unit_price) FROM sales s WHERE s.bill_id = b.id), 0) AS total
+           FROM bills b WHERE b.customer_id = ? AND b.at <= ?) t''',
+      [customerId, at],
+    );
+    final paid = await db.rawQuery(
+      'SELECT COALESCE(SUM(amount), 0) AS v FROM payments WHERE customer_id = ? AND (at < ? OR (at = ? AND id <= ?))',
+      [customerId, at, at, paymentId],
+    );
+    final due = (owed.first['v'] as num).toDouble() - (paid.first['v'] as num).toDouble();
+    return due < stockEpsilon ? 0 : due;
   }
 
   @override

@@ -52,8 +52,7 @@ class ActivityRecorder {
         );
         return rows.isEmpty ? const {} : {'customer': rows.first['customer'], 'total': rows.first['total']};
       case 'payment.collect':
-        return {'customer': await _name('customers', a['customerId'])};
-      case 'category.delete':
+        return {'customer': await _name('customers', a['customerId'])};      case 'category.delete':
         return {'name': await _name('categories', a['id'])};
       case 'category.edit':
         return {'previous': await _name('categories', a['id'])};
@@ -119,6 +118,16 @@ class ActivityRecorder {
           'items': bill.lines.length,
           'customer': bill.customerName,
           'due': bill.due,
+        };
+      case 'sale.attachCustomer':
+        final bill = result as Bill;
+        kind = ActivityKind.customerAdded;
+        detail = {
+          'billId': bill.id,
+          // The name if there is one, otherwise the number.
+          'customer': bill.customerName.isNotEmpty
+              ? bill.customerName
+              : (bill.customerWhatsApp.isNotEmpty ? bill.customerWhatsApp : bill.customerMobile),
         };
       case 'sale.void':
         kind = ActivityKind.saleVoided;

@@ -101,6 +101,16 @@ abstract class SalesRepository {
   /// bill no longer exists.
   Future<void> voidBill(int billId);
 
+  /// Adds (or changes) the customer of a bill that was already sold, for a sale
+  /// made without one. The customer needs a valid number (the receipt and
+  /// reminders go there); the name, address and NID are optional unless the
+  /// bill has a due, then all are required. Whoever matches the number keeps
+  /// their record, as at checkout. Returns the bill as it is now.
+  ///
+  /// Throws [SaleException]: unknownBill, contactRequired, invalidCustomer,
+  /// customerRequiredForDue. On failure nothing changes.
+  Future<Bill> attachCustomer(int billId, CustomerInfo customer);
+
   /// All bills on the calendar day of [day] (local time), newest first.
   Future<List<Bill>> billsOn(DateTime day);
 
@@ -112,6 +122,10 @@ abstract class SalesRepository {
   /// Money received from customers paying off dues, from the start of [day]
   /// to its end.
   Future<double> collectedOn(DateTime day);
+
+  /// The payments received on the calendar day of [day] (local time), newest
+  /// first, each with who paid and what they still owed right after it.
+  Future<List<PaymentReceipt>> paymentsOn(DateTime day);
 }
 
 abstract class CustomerRepository {
