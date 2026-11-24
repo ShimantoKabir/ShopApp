@@ -1,0 +1,7 @@
+*.txt
+.dev.vars
+node_modules
+.wrangler
+
+shops
+.tmp-test-state

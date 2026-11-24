@@ -1,0 +1,8 @@
+name = "hardware-shop-sync"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hardware-shop"
+database_id = "82a5cffe-59ca-43a7-97c8-ef2b4c862cc7"
