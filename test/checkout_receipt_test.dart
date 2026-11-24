@@ -159,8 +159,8 @@ void main() {
   }
 
   Future<void> confirm(WidgetTester tester) async {
-    await tester.ensureVisible(find.text('বিক্রি নিশ্চিত করুন'));
-    await tester.tap(find.text('বিক্রি নিশ্চিত করুন'));
+    await tester.ensureVisible(find.text('নিশ্চিত করুন'));
+    await tester.tap(find.text('নিশ্চিত করুন'));
     await tester.pumpAndSettle();
   }
 
@@ -598,7 +598,7 @@ void main() {
 
     testWidgets('WHATSAPP goes to the WHATSAPP number (not the mobile), with the whole receipt, in one tap', (tester) async {
       await openReceipt(tester, bill(paid: 100));
-      await tester.tap(find.text('WhatsApp-এ পাঠান'));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
@@ -617,19 +617,19 @@ void main() {
 
     testWidgets('a bill from before WhatsApp was required falls back to its mobile number', (tester) async {
       await openReceipt(tester, bill(whatsapp: ''));
-      await tester.tap(find.text('WhatsApp-এ পাঠান'));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
       expect(sender.whatsApp.single.mobile, '01812345678');
     });
 
     testWidgets('with no number at all on the bill, it asks for one, then sends to it', (tester) async {
       await openReceipt(tester, bill(name: '', mobile: '', whatsapp: ''));
-      await tester.tap(find.text('WhatsApp-এ পাঠান'));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
       expect(find.text('গ্রাহকের WhatsApp নম্বর'), findsOneWidget);
 
       await tester.enterText(find.descendant(of: find.byType(AlertDialog), matching: find.byType(TextField)), '01911111111');
-      await tester.tap(dialogButton('WhatsApp-এ পাঠান'));
+      await tester.tap(dialogButton('পাঠান'));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
@@ -638,10 +638,10 @@ void main() {
 
     testWidgets('a wrong number typed in that question does not send, and says so', (tester) async {
       await openReceipt(tester, bill(name: '', mobile: '', whatsapp: ''));
-      await tester.tap(find.text('WhatsApp-এ পাঠান'));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
       await tester.enterText(find.descendant(of: find.byType(AlertDialog), matching: find.byType(TextField)), '12345');
-      await tester.tap(dialogButton('WhatsApp-এ পাঠান'));
+      await tester.tap(dialogButton('পাঠান'));
       await tester.pumpAndSettle();
       expect(sender.whatsApp, isEmpty);
       expect(find.text('সঠিক মোবাইল নম্বর দিন।'), findsOneWidget);
@@ -649,7 +649,7 @@ void main() {
 
     testWidgets('cancelling that question sends nothing', (tester) async {
       await openReceipt(tester, bill(name: '', mobile: '', whatsapp: ''));
-      await tester.tap(find.text('WhatsApp-এ পাঠান'));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
       await tester.tap(dialogButton('বাতিল'));
       await tester.pumpAndSettle();
@@ -659,14 +659,14 @@ void main() {
     testWidgets('WhatsApp that cannot be opened points to the share button', (tester) async {
       sender.whatsAppResult = false;
       await openReceipt(tester, bill());
-      await tester.tap(find.text('WhatsApp-এ পাঠান'));
+      await tester.tap(find.text('WhatsApp'));
       await tester.pumpAndSettle();
       expect(find.text('WhatsApp খোলা যায়নি। শেয়ার বাটন ব্যবহার করুন।'), findsOneWidget);
     });
 
     testWidgets('SHARE sends the same text through the share sheet', (tester) async {
       await openReceipt(tester, bill());
-      await tester.tap(find.text('শেয়ার করুন'));
+      await tester.tap(find.text('শেয়ার'));
       await tester.pumpAndSettle();
       expect(sender.shared, hasLength(1));
       expect(sender.shared.single, contains('পেরেক'));
@@ -675,7 +675,7 @@ void main() {
 
     testWidgets('the sent text never contains a phone number or NID', (tester) async {
       await openReceipt(tester, bill());
-      await tester.tap(find.text('শেয়ার করুন'));
+      await tester.tap(find.text('শেয়ার'));
       await tester.pumpAndSettle();
       expect(sender.shared.single, isNot(contains('01712345678')));
       expect(sender.shared.single, isNot(contains('01812345678')));

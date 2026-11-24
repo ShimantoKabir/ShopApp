@@ -37,7 +37,7 @@ class ReceiptPage extends StatelessWidget {
         context,
         title: Bn.whatsAppNumberLabel,
         hint: toBanglaDigits('01712345678'),
-        confirmLabel: Bn.sendWhatsApp,
+        confirmLabel: Bn.send,
       );
       if (typed == null) return;
       if (!isValidMobile(typed)) {

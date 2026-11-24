@@ -327,8 +327,8 @@ void main() {
       await tester.tap(find.text('+ ১ কেজি'));
       await tester.pumpAndSettle();
       expect(find.text('গ্রাহক ও বাকি'), findsNothing, reason: 'there is no separate quick path any more');
-      expect(find.widgetWithText(FilledButton, 'বিক্রি সম্পন্ন করুন'), findsOneWidget, reason: 'one button, and it leads to checkout');
-      await tester.tap(find.text('বিক্রি সম্পন্ন করুন'));
+      expect(find.widgetWithText(FilledButton, 'বিক্রি করুন'), findsOneWidget, reason: 'one button, and it leads to checkout');
+      await tester.tap(find.text('বিক্রি করুন'));
       await tester.pumpAndSettle();
       expect(find.text('CHECKOUT-PAGE'), findsOneWidget);
       expect(sales.calls, isEmpty);
@@ -339,7 +339,7 @@ void main() {
       final vm = await openSell(tester);
       await tester.tap(find.text('+ ১ কেজি'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('বিক্রি সম্পন্ন করুন'));
+      await tester.tap(find.text('বিক্রি করুন'));
       await tester.pumpAndSettle();
       Navigator.of(tester.element(find.text('CHECKOUT-PAGE'))).pop();
       await tester.pumpAndSettle();
@@ -627,7 +627,7 @@ void main() {
       await tester.tap(find.byType(TappableValue).first);
       await tester.pumpAndSettle();
       expect(find.text('মজুদ আনুন'), findsOneWidget);
-      expect(find.text('মোট মজুদ ঠিক করুন'), findsOneWidget);
+      expect(find.text('মজুদ ঠিক করুন'), findsOneWidget);
 
       await tester.tap(find.text('মজুদ আনুন'));
       await tester.pumpAndSettle();

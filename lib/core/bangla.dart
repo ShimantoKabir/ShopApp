@@ -24,7 +24,8 @@ class Bn {
   static String get loss => _t('ক্ষতি', 'Loss');
   static String get perUnit => _t('প্রতি একক', 'per unit');
   static String get save => _t('সংরক্ষণ', 'Save');
-  static String get saveAndNext => _t('সংরক্ষণ ও পরবর্তী', 'Save and next');
+  static String get saveAndNext => _t('সংরক্ষণ + নতুন', 'Save + new');
+  static String get send => _t('পাঠান', 'Send');
   static String get cancel => _t('বাতিল', 'Cancel');
   static String get delete => _t('মুছুন', 'Delete');
   static String get edit => _t('সম্পাদনা', 'Edit');
@@ -115,7 +116,7 @@ class Bn {
   static String get moveAction => _t('অন্য স্থানে সরান', 'Move to another location');
   static String get moveTo => _t('যে স্থানে সরাবেন', 'Move to which location');
   static String get moveQuantity => _t('কতটুকু সরাবেন', 'How much to move');
-  static String get removeFromLocation => _t('এই স্থান থেকে সরান', 'Remove from this location');
+  static String get removeFromLocation => _t('সরান', 'Remove');
   static String get historyTitle => _t('মজুদের ইতিহাস', 'Stock history');
   static String get history => _t('ইতিহাস', 'History');
   static String get noHistory => _t('এখনো কোনো পরিবর্তন নেই', 'No changes yet');
@@ -164,7 +165,7 @@ class Bn {
   static String get activityGroupPeople => _t('কর্মী ও লগইন', 'Staff and sign-ins');
   static String get activityEmpty => _t('এখনো কোনো কাজ লেখা হয়নি। কেউ কিছু করলে এখানে দেখা যাবে।', 'Nothing recorded yet. When someone does something, it will show here.');
   static String get activityEmptyFiltered => _t('এই বাছাইয়ে কোনো কাজ নেই', 'No activity for this choice');
-  static String get activityMore => _t('আরও দেখুন', 'Show more');
+  static String get activityMore => _t('আরও', 'More');
   static String get activityUnknownPerson => _t('অজানা', 'Unknown');
   static String activitySale(String total, int items, String customer, String due) =>
       Language.isBangla ? 'বিক্রি করেছেন: $total • ${toBanglaDigits('$items')}টি পণ্য${customer.isEmpty ? '' : ' • $customer'}${due.isEmpty ? '' : ' • বাকি $due'}' : 'Sold: $total • ${items == 1 ? '1 item' : '$items items'}${customer.isEmpty ? '' : ' • $customer'}${due.isEmpty ? '' : ' • due $due'}';
@@ -213,10 +214,10 @@ class Bn {
   static String get syncIntro => _t('সবার ফোনে একই দোকান দেখতে ও বিক্রি করতে, এই ফোনের তথ্য ইন্টারনেটে শেয়ার করুন। এরপর যে কোনো ফোন থেকে বিক্রি বা মজুদ বদলানো যাবে, আর সবাই একই হিসাব দেখবে।', 'To let every phone see the same shop and sell from it, share the data on this phone over the internet. After that, sales and stock can be changed from any phone, and everyone sees the same figures.');
   static String get syncUrlLabel => _t('সার্ভারের ঠিকানা', 'Server address');
   static String get syncKeyLabel => _t('দোকানের গোপন কী (Key)', 'Shop secret key');
-  static String get syncShareButton => _t('এই ফোনের তথ্য শেয়ার করুন', 'Share the data on this phone');
+  static String get syncShareButton => _t('তথ্য শেয়ার করুন', 'Share data');
   static String get syncShareWarning => _t('এই ফোনের তথ্যই সবার দোকান হবে। কী (Key) দোকানের বাইরে কাউকে দেবেন না: যার কাছে কী থাকবে সে দোকানের সব তথ্য দেখতে পারবে।', 'The data on this phone becomes the shop for everyone. Do not give the key to anyone outside the shop: whoever has the key can see all of the shop data.');
   static String get syncConnected => _t('এই দোকান শেয়ার করা আছে', 'This shop is shared');
-  static String get syncNow => _t('এখনই মিলান', 'Sync now');
+  static String get syncNow => _t('মিলান', 'Sync');
   static String get syncNeedsInternet => _t('দেখা সবসময় যাবে, কিন্তু বিক্রি বা মজুদ বদলাতে ইন্টারনেট লাগবে, যাতে সবার হিসাব এক থাকে।', 'You can always look, but changing sales or stock needs internet so that everyone has the same figures.');
   static String get syncStateOff => _t('শেয়ার করা নেই', 'Not shared');
   static String get syncStateIdle => _t('সংযুক্ত', 'Connected');
@@ -232,7 +233,7 @@ class Bn {
   static String get joinShopTitle => _t('দোকানে যুক্ত হন', 'Join the shop');
   static String get joinShopIntro => _t('অন্য ফোনে যে দোকান চালু আছে, তাতে এই ফোন যুক্ত করুন। দোকানের কী (Key) মালিকের কাছে পাবেন।', 'Connect this phone to the shop that is already running on another phone. You get the shop key from the owner.');
   static String get joinShopButton => _t('যুক্ত হন', 'Join');
-  static String get joinShopLink => _t('আগে থেকে চালু থাকা দোকানে যুক্ত হন', 'Join a shop that is already running');
+  static String get joinShopLink => _t('চালু দোকানে যুক্ত হন', 'Join an existing shop');
   static String get syncOffline => _t('ইন্টারনেট নেই। সংযোগ ফিরলে আবার চেষ্টা করুন।', 'No internet. Try again when the connection is back.');
   static String get syncUnauthorized => _t('কী (Key) ভুল।', 'Wrong key.');
   static String get syncDelayed => _t('সংরক্ষণ হয়েছে, কিন্তু এই ফোনে দেখা যেতে একটু সময় লাগবে। আবার করবেন না।', 'It was saved, but it will take a moment to show on this phone. Do not do it again.');
@@ -281,7 +282,7 @@ class Bn {
   static String get ownerName => _t('মালিকের নাম', 'Owner name');
   static String get pinConfirm => _t('PIN আবার লিখুন', 'Enter the PIN again');
   static String get pinMismatch => _t('দুটি PIN মিলছে না', 'The two PINs do not match');
-  static String get createOwner => _t('শুরু করুন', 'Start');
+  static String get createOwner => _t('শুরু', 'Start');
   static String get noActiveUsers => _t('কেউ ঢুকতে পারবেন না। মালিকের সাথে কথা বলুন।', 'Nobody can sign in. Talk to the owner.');
   static String get roleOwner => _t('মালিক', 'Owner');
   static String get roleStaff => _t('কর্মী', 'Staff');
@@ -379,7 +380,7 @@ class Bn {
   static String get paymentHistory => _t('টাকা নেওয়ার ইতিহাস', 'Payment history');
   static String get noPayments => _t('এখনো কোনো বাকি আদায় হয়নি', 'No dues collected yet');
   static String get paymentReceivedTitle => _t('টাকা নেওয়া হয়েছে', 'Money received');
-  static String get sendPaymentReceipt => _t('WhatsApp-এ রসিদ পাঠান', 'Send receipt on WhatsApp');
+  static String get sendPaymentReceipt => _t('রসিদ পাঠান', 'Send receipt');
   static String get paymentReceiptTitle => _t('টাকা গ্রহণের রসিদ', 'Payment receipt');
   static String get paymentReceivedLabel => _t('গ্রহণ', 'Received');
   static String get paymentRemainingLabel => _t('এখনো বাকি', 'Still due');
@@ -433,7 +434,7 @@ class Bn {
   static String get restockWhere => _t('কোথায় রাখবেন', 'Where to put it');
   static String get restockLater => _t('পরে ঠিক করব', 'I will decide later');
   static String get restockDone => _t('মজুদ যোগ হয়েছে', 'Stock added');
-  static String get editTotal => _t('মোট মজুদ ঠিক করুন', 'Correct total stock');
+  static String get editTotal => _t('মজুদ ঠিক করুন', 'Correct stock');
 
   static String get sellTitle => _t('বিক্রি', 'Sell');
   static String get sellSearch => _t('বিক্রির পণ্য খুঁজুন', 'Search products to sell');
@@ -442,7 +443,7 @@ class Bn {
   static String get quantity => _t('পরিমাণ', 'Quantity');
   static String get unitPrice => _t('একক দাম', 'Unit price');
   static String get saleTotal => _t('মোট', 'Total');
-  static String get confirmSale => _t('বিক্রি নিশ্চিত করুন', 'Confirm sale');
+  static String get confirmSale => _t('নিশ্চিত করুন', 'Confirm');
   static String get sellFrom => _t('কোথা থেকে', 'Take from');
   static String get sellFromAny => _t('স্বয়ংক্রিয়', 'Automatic');
   static String get available => _t('মজুদ আছে', 'In stock');
@@ -474,7 +475,7 @@ class Bn {
 
   // --- Cart, customer, payment, receipt ---
   static String get addToCart => _t('কার্টে যোগ করুন', 'Add to cart');
-  static String get completeSale => _t('বিক্রি সম্পন্ন করুন', 'Complete sale');
+  static String get completeSale => _t('বিক্রি করুন', 'Sell');
   static String get checkoutTitle => _t('বিক্রি সম্পন্ন করুন', 'Complete sale');
   static String stockChangedElsewhere(String name, double left) => Language.isBangla
       ? (left <= 0
@@ -487,7 +488,7 @@ class Bn {
   static String get cartIconTooltip => _t('কার্ট দেখুন', 'View cart');
   static String get cartEmpty => _t('কার্ট খালি', 'The cart is empty');
   static String get cartSell => _t('বিক্রি করুন', 'Sell');
-  static String get cartCancel => _t('কার্ট বাতিল করুন', 'Cancel cart');
+  static String get cartCancel => _t('কার্ট বাতিল', 'Cancel cart');
   static String get cartCancelConfirm => _t('কার্টের সব পণ্য বাদ দেবেন? কিছু বিক্রি হবে না।', 'Remove everything from the cart? Nothing will be sold.');
   static String get cartCancelled => _t('কার্ট বাতিল করা হয়েছে', 'Cart cancelled');
   static String get contactShare => _t('শেয়ার করুন (যেকোনো অ্যাপে)', 'Share (on any app)');
@@ -541,8 +542,8 @@ class Bn {
   static String get receiptThanks => _t('ধন্যবাদ! আবার আসবেন।', 'Thank you! Please come again.');
   static String get customerLabel => _t('গ্রাহক', 'Customer');
   static String get retailSale => _t('খুচরা বিক্রি', 'Retail sale');
-  static String get sendWhatsApp => _t('WhatsApp-এ পাঠান', 'Send on WhatsApp');
-  static String get shareReceipt => _t('শেয়ার করুন', 'Share');
+  static String get sendWhatsApp => _t('WhatsApp', 'WhatsApp');
+  static String get shareReceipt => _t('শেয়ার', 'Share');
   static String get receiptDone => _t('শেষ', 'Done');
   static String get whatsAppNumberLabel => _t('গ্রাহকের WhatsApp নম্বর', 'Customer WhatsApp number');
   static String get whatsAppFailed => _t('WhatsApp খোলা যায়নি। শেয়ার বাটন ব্যবহার করুন।', 'WhatsApp could not be opened. Use the share button.');

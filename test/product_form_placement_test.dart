@@ -255,9 +255,9 @@ void main() {
       await openForm(tester, product: nails);
       await tester.tap(find.byTooltip('Show menu'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('এই স্থান থেকে সরান'));
+      await tester.tap(find.text('সরান'));
       await tester.pumpAndSettle();
-      await tester.tap(dialogButton('এই স্থান থেকে সরান'));
+      await tester.tap(dialogButton('সরান'));
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);

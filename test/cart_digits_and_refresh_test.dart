@@ -212,12 +212,13 @@ void main() {
       expect(find.text('মজুদে এত পরিমাণ নেই।'), findsOneWidget);
     });
 
-    testWidgets('CANCEL asks first, then empties the cart and closes the page', (tester) async {
+    testWidgets('the cancel button just says "Cancel"; it asks first, then empties the cart and closes the page', (tester) async {
       cart.addToCart(nails);
       await open(tester);
-      await tester.tap(find.text(Bn.cartCancel));
+      await tester.tap(find.text(Bn.cancel));
       await tester.pumpAndSettle();
       expect(cart.cartCount, 1, reason: 'it asked first');
+      expect(find.text('কার্ট বাতিল'), findsOneWidget, reason: 'only the dialog has the longer text');
       await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text(Bn.cartCancel)));
       await tester.pumpAndSettle();
       expect(cart.cartCount, 0);
@@ -227,7 +228,7 @@ void main() {
     testWidgets('keeping the cart when the question is answered "no"', (tester) async {
       cart.addToCart(nails);
       await open(tester);
-      await tester.tap(find.text(Bn.cartCancel));
+      await tester.tap(find.text(Bn.cancel));
       await tester.pumpAndSettle();
       await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text(Bn.cancel)));
       await tester.pumpAndSettle();

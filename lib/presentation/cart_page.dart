@@ -146,7 +146,7 @@ class _CartPageState extends State<CartPage> {
                                 child: OutlinedButton.icon(
                                   onPressed: _cancelCart,
                                   icon: const Icon(Icons.close),
-                                  label: Text(Bn.cartCancel),
+                                  label: Text(Bn.cancel),
                                   style: OutlinedButton.styleFrom(
                                     foregroundColor: theme.colorScheme.error,
                                     minimumSize: const Size.fromHeight(48),
